@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from static.search_results import search_games
 from flask_sqlalchemy import SQLAlchemy
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import bcrypt, pymysql, os, requests, re
+from fetch_games import fetch_games_by_genre
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
@@ -10,22 +11,22 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Avoids warning
 
 db = SQLAlchemy(app)
-load_dotenv()
+# load_dotenv()
 
 # Mailgun configuration
 MAILGUN_API_KEY = os.getenv('MAILGUN_API_KEY')  # Add this to your .env file
 MAILGUN_DOMAIN = os.getenv('MAILGUN_DOMAIN')    # Add your sandbox domain from Mailgun
 
 
-# Setting up RDS connection
-def connect_to_db():
-    return pymysql.connect(
-        host=os.getenv('DB_HOST'),
-        user=os.getenv('DB_USER'),
-        password=os.getenv('DB_PASS'),
-        database=os.getenv('DB_NAME'),
-        cursorclass=pymysql.cursors.DictCursor
-    )
+# # Setting up RDS connection
+# def connect_to_db():
+#     return pymysql.connect(
+#         host=os.getenv('DB_HOST'),
+#         user=os.getenv('DB_USER'),
+#         password=os.getenv('DB_PASS'),
+#         database=os.getenv('DB_NAME'),
+#         cursorclass=pymysql.cursors.DictCursor
+#     )
 
 
 class User(db.Model):
@@ -87,26 +88,28 @@ def home():
 
 
 # Fetch results from RDS table
-def fetch_games(table_name):
-    connection = connect_to_db()
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute(f"SELECT * FROM {table_name}")
-            games = cursor.fetchall()  # Get all rows as a list of dictionaries
-    finally:
-        connection.close()
-    return games
+# def fetch_games(table_name):
+#     connection = connect_to_db()
+#     try:
+#         with connection.cursor() as cursor:
+#             cursor.execute(f"SELECT * FROM {table_name}")
+#             games = cursor.fetchall()  # Get all rows as a list of dictionaries
+#     finally:
+#         connection.close()
+#     return games
 
 
-def fetch_mobile_games():
-    connection = connect_to_db()
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM mobile_games")  # Query all rows from mobilegame table
-            games = cursor.fetchall()  # Fetch all results as a list of dictionaries
-    finally:
-        connection.close()
-    return games
+
+
+# def fetch_mobile_games():
+#     connection = connect_to_db()
+#     try:
+#         with connection.cursor() as cursor:
+#             cursor.execute("SELECT * FROM mobile_games")  # Query all rows from mobilegame table
+#             games = cursor.fetchall()  # Fetch all results as a list of dictionaries
+#     finally:
+#         connection.close()
+#     return games
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -284,7 +287,7 @@ def cart():
 
 @app.route('/action-games')
 def action_games():
-    games = fetch_games('action_games')  # Fetch games from the database
+    games = fetch_games_by_genre("Action")  # Fetch games from the database
     genre_videos = [  # Action-specific videos
         'liQLtCLq3tc',
         'AKXiKBnzpBQ',
@@ -295,7 +298,7 @@ def action_games():
 
 @app.route('/adventure-games')
 def adventure_games():
-    games = fetch_games('adventure_games')
+    games = fetch_games_by_genre("Adventure")
     genre_videos = [
         'A88YiZdXugA',
         'f28nKLp-eKg',
@@ -307,7 +310,7 @@ def adventure_games():
 # Route for Early Access Games
 @app.route('/earlyaccess-games')
 def earlyaccess_games():
-    games = fetch_games('earlyaccess_games')
+    games = fetch_games_by_genre("Early Access")
     genre_videos = [
         '-f_--CwFsNo',
         'iU9ZiJQBTqE',
@@ -319,7 +322,7 @@ def earlyaccess_games():
 # Route for Free Games
 @app.route('/free-games')
 def free_games():
-    games = fetch_games('free_games')
+    games = fetch_games_by_genre("Free to Play")
     genre_videos = [
         'Odj7pIsHRt0',
         'PyMlV5_HRWk',
@@ -331,7 +334,7 @@ def free_games():
 # Add additional routes for each genre as needed
 @app.route('/indie-games')
 def indie_games():
-    games = fetch_games('indie_games')
+    games = fetch_games_by_genre("Indie")
     genre_videos = [
         'SgSX3gOrj60',
         'bVbyn7c1X6E',
@@ -342,7 +345,7 @@ def indie_games():
 
 @app.route('/mmo-games')
 def mmo_games():
-    games = fetch_games('mmo_games')
+    games = fetch_games_by_genre("MMO")
     genre_videos = [
         'dZrxWFrd1zQ',
         'W8WFJN2syoM',
@@ -353,7 +356,7 @@ def mmo_games():
 
 @app.route('/rpg-games')
 def rpg_games():
-    games = fetch_games('rpg_games')
+    games = fetch_games_by_genre("RPG")
     genre_videos = [
         'BtyBjOW8sGY',
         '6umhTJQltak',
@@ -364,7 +367,7 @@ def rpg_games():
 
 @app.route('/simulation-games')
 def simulation_games():
-    games = fetch_games('simulation_games')
+    games = fetch_games_by_genre("Simulation")
     genre_videos = [
         '5uvwfskYwl0',
         'pzgPXOw2plI',
@@ -375,7 +378,7 @@ def simulation_games():
 
 @app.route('/sports-games')
 def sports_games():
-    games = fetch_games('sports_games')
+    games = fetch_games_by_genre("Sports")
     genre_videos = [
         'CYncAnd31Q8',
         '9ewiJJe_nYI',
@@ -386,7 +389,7 @@ def sports_games():
 
 @app.route('/strategy-games')
 def strategy_games():
-    games = fetch_games('strategy_games')
+    games = fetch_games_by_genre("Strategy")
     genre_videos = [
         '5KdE0p2joJw',
         'J8SBp4SyvLc',
@@ -395,19 +398,19 @@ def strategy_games():
     return render_template('genre_games.html', genre='Strategy', games=games, genre_videos=genre_videos)
 
 
-@app.route('/mobile_games')
-def mobile_games():
-    games = fetch_mobile_games()  # Fetch games from the mobilegame table in RDS
-    genre_videos = [
-        '44MOkHyEvJs', 'R8htow_6tRc', 'QLuShrJyurE', 'mfm0VHQJZxE',
-        'GajGrj7HLQM', 'uA16fjZArkY', 'w8vPZrMFiZ4', 'zCX-Tz8KpXE',
-        'Nkhvl4Sazj4', 'ot7uXNQskhs', 'M0niPfYZaaI',
-    ]
-    return render_template('mobileGames.html', genre='Mobile', games=games, genre_videos=genre_videos)
+# @app.route('/mobile_games')
+# def mobile_games():
+#     games = fetch_mobile_games()  # Fetch games from the mobilegame table in RDS
+#     genre_videos = [
+#         '44MOkHyEvJs', 'R8htow_6tRc', 'QLuShrJyurE', 'mfm0VHQJZxE',
+#         'GajGrj7HLQM', 'uA16fjZArkY', 'w8vPZrMFiZ4', 'zCX-Tz8KpXE',
+#         'Nkhvl4Sazj4', 'ot7uXNQskhs', 'M0niPfYZaaI',
+#     ]
+#     return render_template('mobileGames.html', genre='Mobile', games=games, genre_videos=genre_videos)
 
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Creates the new schema with the additional fields
-    app.run(debug=True)
+    
 
