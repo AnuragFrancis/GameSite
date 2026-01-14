@@ -164,6 +164,7 @@ def get_db_connection():
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASSWORD"),
         port=int(os.getenv("DB_PORT", 5432)),
+        sslmode="require",
         cursor_factory=RealDictCursor
     )
 
