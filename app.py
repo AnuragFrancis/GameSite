@@ -100,7 +100,6 @@ def home():
 
 
 
-
 # def fetch_mobile_games():
 #     connection = connect_to_db()
 #     try:
@@ -407,6 +406,14 @@ def strategy_games():
 #         'Nkhvl4Sazj4', 'ot7uXNQskhs', 'M0niPfYZaaI',
 #     ]
 #     return render_template('mobileGames.html', genre='Mobile', games=games, genre_videos=genre_videos)
+@app.route('/mobile_games')
+def mobile_games():
+    return render_template(
+        'genre_games.html',
+        genre='Mobile',
+        games=[],
+        genre_videos=[]
+    )
 
 
 if __name__ == '__main__':
