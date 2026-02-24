@@ -3,7 +3,7 @@
 
 # 🎮 **GameSite - Flask App** 🎮
 
-Welcome to **[GameSite]https://gamesite-90uw.onrender.com/**, your go-to web app for discovering the best deals on video games! 🚀 This project, powered by Flask, helps users find and track trending games with the best prices across various platforms. With flexible deployment options, you can run this app using Docker on any service of your choice.
+Welcome to **[GameSite] https://gamesite-90uw.onrender.com/**, your go-to web app for discovering the best deals on video games! 🚀 This project, powered by Flask, helps users find and track trending games with the best prices across various platforms. With flexible deployment options, you can run this app using Docker on any service of your choice.
 
 ---
 
